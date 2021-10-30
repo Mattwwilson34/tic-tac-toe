@@ -172,6 +172,11 @@ const Game = {
         } else if (board[0][2][txt] === 'o' && board[1][1][txt] === 'o' && board[2][0][txt] === 'o') {
             this.gameOver('o');
         }
+
+        ///Check for tie
+        if (this.moveCount > 8) {
+            console.log('Tie game!');
+        }
     },
 
     gameOver: function (winningSymbol) {
