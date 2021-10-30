@@ -79,14 +79,29 @@ const Game = {
         if (firstRound) {
             Gameboard.render();
         }
-        Game.generatePlayers();
+        this.generatePlayers();
+        this.bindEvents();
         this.player1.toggleActive();
         this.moveCount = 0;
     },
 
     generatePlayers: function () {
+        // player1Name = prompt('Enter a name for player1. They will be crosses.');
+        // while (player1Name === '') {
+        //     player1Name = prompt('Name cannot be blank.');
+        // }
+        // player2Name = prompt('Enter a name for player2. They will be circles.');
+        // while (player2Name === '') {
+        //     player2Name = prompt('Name cannot be blank.');
+        // }
+
         this.player1 = Player('Matt', 'x');
         this.player2 = Player('Lyra', 'o');
+    },
+
+    bindEvents: function () {
+        this.resetBtn = document.querySelector('.reset');
+        this.resetBtn.addEventListener('click', this.reset);
     },
 
     checkActivePlayer: function () {
@@ -181,11 +196,13 @@ const Game = {
 
     gameOver: function (winningSymbol) {
         if (winningSymbol === 'x') {
-            console.log(`${this.player1.getName()} has won the game!`);
-            this.reset();
+            this.winningPlayer = this.player1.getName();
+            DisplayController.displayWinnerOverlay();
+            DisplayController.bindEvents();
         } else if (winningSymbol === 'o') {
-            console.log(`${this.player2.getName()} has won the game!`);
-            this.reset();
+            this.winningPlayer = this.player2.getName();
+            DisplayController.displayWinnerOverlay();
+            DisplayController.bindEvents();
         }
     },
 
@@ -194,7 +211,32 @@ const Game = {
         delete this.player1;
         delete this.player2;
         Gameboard.clearBoard();
+        DisplayController.hideWinnerOverlay();
         Game.initGame(firstRound);
+    },
+};
+
+const DisplayController = {
+    displayWinnerOverlay: function () {
+        this.overlay = document.querySelector('.overlay');
+        this.modal = document.querySelector('.modal');
+        this.modal.textContent = `${Game.winningPlayer} has won the game!`;
+        this.addModalResetBtn();
+        this.overlay.style.display = 'block';
+        this.modal.style.display = 'block';
+    },
+    hideWinnerOverlay: function () {
+        this.overlay.style.display = 'none';
+        this.modal.style.display = 'none';
+    },
+    addModalResetBtn: function () {
+        this.modalResetBtn = document.createElement('button');
+        this.modalResetBtn.classList = 'modal-reset';
+        this.modalResetBtn.textContent = 'Reset';
+        this.modal.append(this.modalResetBtn);
+    },
+    bindEvents: function () {
+        this.modalResetBtn.addEventListener('click', Game.reset);
     },
 };
 
