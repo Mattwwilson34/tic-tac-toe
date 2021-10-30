@@ -79,6 +79,7 @@ const Game = {
         if (firstRound) {
             Gameboard.render();
         }
+        this.gameIsOver = false;
         this.generatePlayers();
         this.bindEvents();
         this.player1.toggleActive();
@@ -86,17 +87,17 @@ const Game = {
     },
 
     generatePlayers: function () {
-        // player1Name = prompt('Enter a name for player1. They will be crosses.');
-        // while (player1Name === '') {
-        //     player1Name = prompt('Name cannot be blank.');
-        // }
-        // player2Name = prompt('Enter a name for player2. They will be circles.');
-        // while (player2Name === '') {
-        //     player2Name = prompt('Name cannot be blank.');
-        // }
+        player1Name = prompt('Enter a name for player1. They will be crosses.');
+        while (player1Name === '') {
+            player1Name = prompt('Name cannot be blank.');
+        }
+        player2Name = prompt('Enter a name for player2. They will be circles.');
+        while (player2Name === '') {
+            player2Name = prompt('Name cannot be blank.');
+        }
 
-        this.player1 = Player('Matt', 'x');
-        this.player2 = Player('Lyra', 'o');
+        this.player1 = Player(player1Name, 'x');
+        this.player2 = Player(player2Name, 'o');
     },
 
     bindEvents: function () {
@@ -189,24 +190,32 @@ const Game = {
         }
 
         ///Check for tie
-        if (this.moveCount > 8) {
-            console.log('Tie game!');
+        if (this.moveCount > 8 && !this.gameIsOver) {
+            this.gameOver();
         }
     },
 
-    gameOver: function (winningSymbol) {
+    gameOver: function (winningSymbol = 'tie') {
+        this.gameIsOver = true;
         if (winningSymbol === 'x') {
             this.winningPlayer = this.player1.getName();
-            DisplayController.displayWinnerOverlay();
-            DisplayController.bindEvents();
+            this.displayWinner();
         } else if (winningSymbol === 'o') {
             this.winningPlayer = this.player2.getName();
-            DisplayController.displayWinnerOverlay();
-            DisplayController.bindEvents();
+            this.displayWinner();
+        } else {
+            this.winningPlayer = 'Tie game! Neither player';
+            this.displayWinner();
         }
+    },
+
+    displayWinner: function () {
+        DisplayController.displayWinnerOverlay();
+        DisplayController.bindEvents();
     },
 
     reset: function () {
+        this.gameIsOver = false;
         let firstRound = false;
         delete this.player1;
         delete this.player2;
