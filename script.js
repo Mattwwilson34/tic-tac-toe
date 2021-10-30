@@ -51,6 +51,14 @@ const Gameboard = {
             });
         });
     },
+
+    clearBoard: function () {
+        this.board.forEach((squareArray) => {
+            squareArray.forEach((square) => {
+                square.textContent = '';
+            });
+        });
+    },
 };
 
 /// player factory function
@@ -67,23 +75,25 @@ const Player = (name, symbol) => {
 
 /// Game module
 const Game = {
-    initGame: function () {
-        Gameboard.render();
+    initGame: function (firstRound = 'true') {
+        if (firstRound) {
+            Gameboard.render();
+        }
         Game.generatePlayers();
         this.player1.toggleActive();
         this.moveCount = 0;
     },
 
     generatePlayers: function () {
-        this.player1 = Player('player1', 'x');
-        this.player2 = Player('player2', 'o');
+        this.player1 = Player('Matt', 'x');
+        this.player2 = Player('Lyra', 'o');
     },
 
     checkActivePlayer: function () {
         if (this.player1.getActive()) {
-            return this.player1.getName();
+            return 'player1';
         } else {
-            return this.player2.getName();
+            return 'player2';
         }
     },
 
@@ -98,19 +108,6 @@ const Game = {
         } else return false;
     },
 
-    checkForWinner: function () {
-        const winConditions = [
-            [0, 1, 2], // rows
-            [3, 4, 5], // rows
-            [6, 7, 8], // rows
-            [0, 3, 6], // columns
-            [1, 4, 7], // columns
-            [2, 5, 8], // columns
-            [0, 4, 8], // diagnols
-            [2, 4, 6], // diagnols
-        ];
-    },
-
     makeMove: function (e) {
         const activePlayer = Game.checkActivePlayer();
         const activePlayerSymbol = Game[activePlayer].getSymbol();
@@ -123,6 +120,76 @@ const Game = {
         if (Game.moveCount > 4) {
             Game.checkForWinner();
         }
+    },
+
+    checkForWinner: function () {
+        const board = Gameboard.board;
+        const txt = 'textContent';
+
+        //! XXXX
+        ///Rows
+        if (board[0][0][txt] === 'x' && board[0][1][txt] === 'x' && board[0][2][txt] === 'x') {
+            this.gameOver('x');
+        } else if (board[1][0][txt] === 'x' && board[1][1][txt] === 'x' && board[1][2][txt] === 'x') {
+            this.gameOver('x');
+        } else if (board[2][0][txt] === 'x' && board[2][1][txt] === 'x' && board[2][2][txt] === 'x') {
+            this.gameOver('x');
+        }
+        ///Columns
+        if (board[0][0][txt] === 'x' && board[1][0][txt] === 'x' && board[2][0][txt] === 'x') {
+            this.gameOver('x');
+        } else if (board[0][1][txt] === 'x' && board[1][1][txt] === 'x' && board[2][1][txt] === 'x') {
+            this.gameOver('x');
+        } else if (board[0][2][txt] === 'x' && board[1][2][txt] === 'x' && board[2][2][txt] === 'x') {
+            this.gameOver('x');
+        }
+        ///Diagonal
+        if (board[0][0][txt] === 'x' && board[1][1][txt] === 'x' && board[2][2][txt] === 'x') {
+            this.gameOver('x');
+        } else if (board[0][2][txt] === 'x' && board[1][1][txt] === 'x' && board[2][0][txt] === 'x') {
+            this.gameOver('x');
+        }
+        //!ooooooo
+        ///Rows
+        if (board[0][0][txt] === 'o' && board[0][1][txt] === 'o' && board[0][2][txt] === 'o') {
+            this.gameOver('o');
+        } else if (board[1][0][txt] === 'o' && board[1][1][txt] === 'o' && board[1][2][txt] === 'o') {
+            this.gameOver('o');
+        } else if (board[2][0][txt] === 'o' && board[2][1][txt] === 'o' && board[2][2][txt] === 'o') {
+            this.gameOver('o');
+        }
+        ///Columns
+        if (board[0][0][txt] === 'o' && board[1][0][txt] === 'o' && board[2][0][txt] === 'o') {
+            this.gameOver('o');
+        } else if (board[0][1][txt] === 'o' && board[1][1][txt] === 'o' && board[2][1][txt] === 'o') {
+            this.gameOver('o');
+        } else if (board[0][2][txt] === 'o' && board[1][2][txt] === 'o' && board[2][2][txt] === 'o') {
+            this.gameOver('o');
+        }
+        ///Diagonal
+        if (board[0][0][txt] === 'o' && board[1][1][txt] === 'o' && board[2][2][txt] === 'o') {
+            this.gameOver('o');
+        } else if (board[0][2][txt] === 'o' && board[1][1][txt] === 'o' && board[2][0][txt] === 'o') {
+            this.gameOver('o');
+        }
+    },
+
+    gameOver: function (winningSymbol) {
+        if (winningSymbol === 'x') {
+            console.log(`${this.player1.getName()} has won the game!`);
+            this.reset();
+        } else if (winningSymbol === 'o') {
+            console.log(`${this.player2.getName()} has won the game!`);
+            this.reset();
+        }
+    },
+
+    reset: function () {
+        let firstRound = false;
+        delete this.player1;
+        delete this.player2;
+        Gameboard.clearBoard();
+        Game.initGame(firstRound);
     },
 };
 
